@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Prevent text size adjustment on mobile orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+/* Remove tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth theme transitions */
+*, *::before, *::after {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
+}
+
+/* Carousel nav arrows: always visible on touch-only devices */
+@media (hover: none) and (pointer: coarse) {
+  .carousel-arrow {
+    opacity: 0.85 !important;
+  }
+}
+
+/* Prevent transition on page load */
+.no-transition * {
+  transition: none !important;
+}
+
+/* Custom scrollbar for dark mode */
+html.dark ::-webkit-scrollbar-track {
+  background: #111827;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+/* Input autofill dark mode */
+html.dark input:-webkit-autofill,
+html.dark input:-webkit-autofill:hover,
+html.dark input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #1f2937 inset;
+  -webkit-text-fill-color: #f9fafb;
+  caret-color: #f9fafb;
+}
