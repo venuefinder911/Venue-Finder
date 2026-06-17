@@ -105,14 +105,12 @@ const Profile = () => {
   };
 
   const handleCancelBooking = async (booking) => {
-    // Enforce 48-hour cancellation policy
-    const bookedAt = booking.createdAt?.toDate?.() || new Date(booking.createdAt);
-    const hoursSince = (Date.now() - bookedAt.getTime()) / 36e5;
-    if (hoursSince > 48) {
-      toast.error("Cancellations are only allowed within 48 hours of booking.");
+    // Only pending bookings can be cancelled from the profile page
+    if (booking.status !== "pending") {
+      toast.error("Only pending bookings can be cancelled here. Go to My Bookings for approved bookings.");
       return;
     }
-    if (!confirm("Cancel this booking?")) return;
+    if (!window.confirm("Cancel this booking?")) return;
     try {
       await updateDoc(doc(db, "bookings", booking.id), {
         status:             "cancelled",

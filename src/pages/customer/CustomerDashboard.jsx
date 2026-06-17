@@ -36,8 +36,8 @@ const CustomerDashboard = () => {
           </p>
         </div>
 
-        {/* Compact stat cards */}
-        <div className="flex items-stretch gap-3 self-start">
+        {/* Compact stat cards — hidden on mobile, visible from sm */}
+        <div className="hidden sm:flex items-stretch gap-3 self-start">
           <div className="flex items-center gap-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl px-4 py-3 shadow-sm">
             <div className="w-9 h-9 bg-sky-50 dark:bg-sky-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
               <Building2 className="w-4 h-4 text-sky-500" />
@@ -68,7 +68,7 @@ const CustomerDashboard = () => {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 xl:gap-8 items-start">
+      <div className="flex flex-col md:flex-row gap-6 xl:gap-8 items-stretch">
         <SmartFilters venues={venues} onFilter={setFilteredVenues} />
 
         <div className="flex-1 min-w-0">

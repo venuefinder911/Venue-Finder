@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import {
   CalendarDays,
   Users,
-  DollarSign,
+  Banknote,
   MessageSquare,
   Clock,
   CheckCircle2,
@@ -304,7 +304,7 @@ const BookingCard = ({ booking, onCancelClick }) => {
             )}
             {booking.estimatedTotal > 0 && (
               <span className="flex items-center gap-1 font-semibold text-sky-600">
-                <DollarSign className="w-3 h-3" />
+                <Banknote className="w-3 h-3" />
                 Est. PKR {Number(booking.estimatedTotal).toLocaleString()}
               </span>
             )}
@@ -353,7 +353,7 @@ const BookingCard = ({ booking, onCancelClick }) => {
               }
             />
             <Detail
-              icon={<DollarSign className="w-3.5 h-3.5 text-sky-400" />}
+              icon={<Banknote className="w-3.5 h-3.5 text-sky-400" />}
               label="Est. Total"
               value={
                 booking.estimatedTotal > 0
@@ -554,7 +554,7 @@ const MyBookings = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-2 sm:gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           <StatCard
             icon={<BarChart3 className="w-4 h-4 text-sky-500" />}
             label="Total"
@@ -656,15 +656,15 @@ const MyBookings = () => {
 };
 
 const StatCard = ({ icon, label, value }) => (
-  <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex items-center gap-3">
-    <div className="w-9 h-9 bg-gray-50 dark:bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0">
+  <div className="bg-white dark:bg-gray-900 p-3 sm:p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex items-center gap-2 sm:gap-3">
+    <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gray-50 dark:bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0">
       {icon}
     </div>
-    <div>
-      <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+    <div className="min-w-0">
+      <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider truncate">
         {label}
       </p>
-      <p className="text-xl font-extrabold text-gray-900 dark:text-white leading-none">
+      <p className="text-lg sm:text-xl font-extrabold text-gray-900 dark:text-white leading-none">
         {value}
       </p>
     </div>

@@ -207,34 +207,37 @@ const MonitorBookings = () => {
           ))}
         </div>
 
-        {/* Search */}
-        <div className="relative mb-5">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-          <input type="text" placeholder="Search by venue, customer, or event type…"
-            value={search} onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/40 transition"
-          />
-        </div>
+        {/* Sticky search + tabs — stick below AdminHeader */}
+        <div className="sticky top-14 sm:top-16 z-10 bg-[#07091a] -mx-4 sm:-mx-6 px-4 sm:px-6 pb-4 pt-2">
+          {/* Search */}
+          <div className="relative mb-3">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <input type="text" placeholder="Search by venue, customer, or event type…"
+              value={search} onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/40 transition"
+            />
+          </div>
 
-        {/* Tabs */}
-        <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
-          {TABS.map((tab) => {
-            const isCancelTab = tab === "Cancel Requests";
-            return (
-              <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition whitespace-nowrap ${
-                  activeTab === tab
-                    ? isCancelTab ? "bg-orange-500 text-white shadow-lg shadow-orange-500/25" : "bg-sky-500 text-white shadow-lg shadow-sky-500/25"
-                    : "bg-white/[0.04] border border-white/[0.08] text-slate-400 hover:text-white hover:bg-white/[0.08]"
-                }`}
-              >
-                {tab}
-                <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full font-bold ${activeTab === tab ? "bg-white/20" : "bg-white/[0.08] text-slate-500"}`}>
-                  {tabCount(tab)}
-                </span>
-              </button>
-            );
-          })}
+          {/* Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            {TABS.map((tab) => {
+              const isCancelTab = tab === "Cancel Requests";
+              return (
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition whitespace-nowrap ${
+                    activeTab === tab
+                      ? isCancelTab ? "bg-orange-500 text-white shadow-lg shadow-orange-500/25" : "bg-sky-500 text-white shadow-lg shadow-sky-500/25"
+                      : "bg-white/[0.04] border border-white/[0.08] text-slate-400 hover:text-white hover:bg-white/[0.08]"
+                  }`}
+                >
+                  {tab}
+                  <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full font-bold ${activeTab === tab ? "bg-white/20" : "bg-white/[0.08] text-slate-500"}`}>
+                    {tabCount(tab)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {loading && <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 text-sky-400 animate-spin" /></div>}

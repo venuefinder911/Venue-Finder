@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import {
   Shield, LogOut, RefreshCw, Search, CheckCircle2, XCircle,
   Trash2, Building2, Clock3, LayoutDashboard, MapPin, ChevronDown,
-  Flag, Users, BookOpen, X, Phone, DollarSign, Loader2, Menu,
+  Flag, Users, BookOpen, X, Phone, Banknote, Loader2, Menu,
 } from "lucide-react";
 
 const STATUS = {
@@ -390,7 +390,7 @@ const AdminDashboard = () => {
                 {[
                   { icon: MapPin,    label: "Location", value: selectedVenue.location || selectedVenue.city || "N/A" },
                   { icon: Users,     label: "Capacity", value: selectedVenue.capacity ? `${selectedVenue.capacity} guests` : "N/A" },
-                  { icon: DollarSign,label: "Starting from", value: selectedVenue.packages?.length > 0 ? `PKR ${Math.min(...selectedVenue.packages.map((p) => Number(p.pricePerPerson))).toLocaleString()}/person` : "Contact for pricing" },
+                  { icon: Banknote,label: "Starting from", value: selectedVenue.packages?.length > 0 ? `PKR ${Math.min(...selectedVenue.packages.map((p) => Number(p.pricePerPerson))).toLocaleString()}/person` : "Contact for pricing" },
                   { icon: Phone,     label: "Contact",  value: selectedVenue.contact || "N/A" },
                 ].map(({ icon: Icon, label, value }) => (
                   <div key={label} className="bg-white/[0.04] border border-white/[0.07] rounded-xl px-4 py-3">

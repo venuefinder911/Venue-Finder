@@ -23,7 +23,7 @@ import {
   CheckCircle2,
   BarChart3,
   Inbox,
-  DollarSign,
+  Banknote,
 } from "lucide-react";
 
 const OwnerProfile = () => {
@@ -229,7 +229,7 @@ const OwnerProfile = () => {
             value={stats.approvedBookings}
           />
           <StatCard
-            icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
+            icon={<Banknote className="w-5 h-5 text-emerald-500" />}
             label="Pending"
             value={stats.pendingBookings}
           />

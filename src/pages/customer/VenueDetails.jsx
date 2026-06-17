@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
-import { db } from "../../services/firebase";
+import { db, auth } from "../../services/firebase";
 import {
   doc, getDoc, setDoc, deleteDoc, addDoc,
   collection, query, where, getDocs, Timestamp, serverTimestamp,
@@ -109,12 +109,13 @@ const VenueDetails = () => {
     return slots;
   }, [allBookings, selectedHall, venue?.halls]);
 
-  // Fetch favorite status
+  // Fetch favorite status — use auth.currentUser so token is guaranteed ready
   useEffect(() => {
-    if (!user) return;
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
     const checkFav = async () => {
       try {
-        const favDoc = await getDoc(doc(db, "users", user.uid, "favorites", id));
+        const favDoc = await getDoc(doc(db, "users", uid, "favorites", id));
         setIsFav(favDoc.exists());
       } catch (err) { console.error(err); }
     };
@@ -131,12 +132,13 @@ const VenueDetails = () => {
     return () => clearInterval(timer);
   }, [nextImg, images.length]);
 
-  // Toggle favorite
+  // Toggle favorite — use auth.currentUser so token is guaranteed ready
   const toggleFavorite = async () => {
-    if (!user) { toast.info("Please login to save favorites."); return; }
+    const uid = auth.currentUser?.uid;
+    if (!uid) { toast.info("Please login to save favorites."); return; }
     setFavLoading(true);
     try {
-      const favRef = doc(db, "users", user.uid, "favorites", id);
+      const favRef = doc(db, "users", uid, "favorites", id);
       if (isFav) {
         await deleteDoc(favRef);
         setIsFav(false);
@@ -346,8 +348,8 @@ const VenueDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 overflow-x-hidden">
 
-      {/* Top bar */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-20">
+      {/* Top bar — sticky below the main Navbar (Navbar is sticky top-0 z-50, ~64px tall) */}
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-16 z-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <button onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition">
@@ -651,7 +653,7 @@ const VenueDetails = () => {
 
           {/* RIGHT: Booking panel */}
           <div className="lg:col-span-1" ref={bookingPanelRef}>
-            <div className="lg:sticky lg:top-24 space-y-4">
+            <div className="lg:sticky lg:top-[7rem] space-y-4">
               <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4 sm:p-6 shadow-sm">
                 <h2 className="text-lg font-extrabold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                   <CalendarDays className="w-5 h-5 text-sky-500" /> Book This Venue

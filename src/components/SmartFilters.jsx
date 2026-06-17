@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import {
-  Search, MapPin, DollarSign, Users, Tag, X,
+  Search, MapPin, Banknote, Users, Tag, X,
   SlidersHorizontal, ChevronDown, Sparkles,
 } from "lucide-react";
 
@@ -29,6 +29,7 @@ const SelectWrap = ({ children }) => (
 );
 
 const FilterPanel = ({
+  noCard = false,
   activeCount, hasActive, onClear,
   searchText, onSearchText,
   city, onCity, cities,
@@ -38,8 +39,9 @@ const FilterPanel = ({
   minCapacity, onMinCapacity,
   filteredCount, venueCount,
   onDone,
-}) => (
-  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+}) => {
+  const inner = (
+    <>
     {/* Header */}
     <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800">
       <div className="flex items-center gap-2">
@@ -115,7 +117,7 @@ const FilterPanel = ({
       </Row>
 
       {/* Price / Person */}
-      <Row icon={DollarSign} label="Price / Person (PKR)">
+      <Row icon={Banknote} label="Price / Person (PKR)">
         <div className="flex gap-2">
           <input type="number" value={minPrice} onChange={(e) => onMinPrice(e.target.value)}
             placeholder="Min" min={0} className={INP} />
@@ -146,8 +148,16 @@ const FilterPanel = ({
         </button>
       )}
     </div>
-  </div>
-);
+    </>
+  );
+
+  if (noCard) return inner;
+  return (
+    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+      {inner}
+    </div>
+  );
+};
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
@@ -221,9 +231,9 @@ const SmartFilters = ({ venues = [], onFilter, externalEventType = "", onClearEx
   };
 
   return (
-    <div className="lg:w-56 xl:w-64 lg:flex-shrink-0">
-      {/* Mobile trigger */}
-      <div className="lg:hidden mb-4">
+    <div className="md:w-48 lg:w-56 xl:w-64 md:flex-shrink-0">
+      {/* Mobile trigger — only on screens below md */}
+      <div className="md:hidden mb-4">
         <button
           onClick={() => setShowMobile(true)}
           className="w-full flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:border-sky-400 transition"
@@ -239,9 +249,9 @@ const SmartFilters = ({ venues = [], onFilter, externalEventType = "", onClearEx
         </button>
       </div>
 
-      {/* Mobile overlay drawer */}
+      {/* Mobile overlay drawer — below md */}
       {showMobile && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowMobile(false)} />
           <div className="absolute left-0 top-0 bottom-0 w-72 max-w-[90vw] overflow-y-auto shadow-2xl">
             <FilterPanel {...panelProps} onDone={() => setShowMobile(false)} />
@@ -249,9 +259,9 @@ const SmartFilters = ({ venues = [], onFilter, externalEventType = "", onClearEx
         </div>
       )}
 
-      {/* Desktop sidebar */}
-      <div className="hidden lg:block lg:sticky lg:top-20">
-        <FilterPanel {...panelProps} />
+      {/* Sidebar — sticks below navbar from md upwards */}
+      <div className="hidden md:block sticky top-20 max-h-[calc(100vh-5.5rem)] overflow-y-auto overflow-x-hidden no-scrollbar bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+        <FilterPanel {...panelProps} noCard />
       </div>
     </div>
   );

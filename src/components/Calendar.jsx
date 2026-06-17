@@ -4,13 +4,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const DAYS   = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-// The three individual slots — if all three are booked the date is fully booked
-const INDIVIDUAL_SLOTS = ["morning", "afternoon", "evening"];
+// The two bookable time slots (morning + evening). If both are booked the date is fully booked.
+// full_day bookings also make the date fully booked (handled separately below).
+const INDIVIDUAL_SLOTS = ["morning", "evening"];
 
 /**
  * bookedSlots — shape: { "2026-06-14": ["morning", "full_day"], ... }
- * A date is "fully booked" when it has full_day OR all three individual slots.
- * A date is "partially booked" when it has some but not all slots.
+ * A date is "fully booked" when it has full_day OR both morning AND evening slots.
+ * A date is "partially booked" when it has morning or evening (but not both).
  */
 const Calendar = ({ bookedSlots = {}, selectedDate, onSelect }) => {
   const today = new Date();

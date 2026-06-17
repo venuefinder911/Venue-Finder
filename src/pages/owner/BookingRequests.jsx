@@ -157,8 +157,8 @@ const BookingRequests = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-10">
+      {/* Header — sticks below main navbar */}
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-16 z-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-4">
           <button onClick={() => navigate("/dashboard/owner")} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition">
             <ArrowLeft className="w-4 h-4" /> Back
@@ -175,8 +175,9 @@ const BookingRequests = () => {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 py-8">
-        {/* Tabs */}
-        <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2">
+        {/* Tabs — sticky below page header */}
+        <div className="sticky top-[calc(4rem+57px)] z-10 bg-gray-50 dark:bg-gray-950 -mx-4 px-4 pb-4 pt-1">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
           {TABS.map((tab) => {
             const count = tab === "All" ? bookings.length : bookings.filter((b) => b.status?.toLowerCase() === tab.toLowerCase()).length;
             return (
@@ -196,6 +197,7 @@ const BookingRequests = () => {
             );
           })}
         </div>
+        </div>{/* end sticky tabs wrapper */}
 
         {loading && <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-sky-500 animate-spin" /></div>}
 

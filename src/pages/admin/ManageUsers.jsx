@@ -26,7 +26,7 @@ import {
   X,
   MapPin,
   Phone,
-  DollarSign,
+  Banknote,
   CheckCircle2,
   XCircle,
   Clock,
@@ -199,44 +199,47 @@ const ManageUsers = () => {
           ))}
         </div>
 
-        {/* Search */}
-        <div className="relative mb-5">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-          <input
-            type="text"
-            placeholder="Search by name, email, or venue..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition"
-          />
-        </div>
+        {/* Sticky search + tabs — stick below AdminHeader */}
+        <div className="sticky top-14 sm:top-16 z-10 bg-[#07091a] -mx-4 sm:-mx-6 px-4 sm:px-6 pb-4 pt-2">
+          {/* Search */}
+          <div className="relative mb-3">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <input
+              type="text"
+              placeholder="Search by name, email, or venue..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition"
+            />
+          </div>
 
-        {/* Tabs */}
-        <div className="flex items-center gap-3 mb-6">
-          {[
-            { key: "customers", label: "Customers", icon: Users, count: customers.length },
-            { key: "owners", label: "Venue Owners", icon: Building2, count: owners.length },
-          ].map(({ key, label, icon: Icon, count }) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition ${
-                activeTab === key
-                  ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
-                  : "bg-white/[0.04] border border-white/[0.08] text-slate-400 hover:text-white hover:bg-white/[0.08]"
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-              <span
-                className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
-                  activeTab === key ? "bg-white/20" : "bg-white/[0.08] text-slate-400"
+          {/* Tabs */}
+          <div className="flex items-center gap-3">
+            {[
+              { key: "customers", label: "Customers", icon: Users, count: customers.length },
+              { key: "owners", label: "Venue Owners", icon: Building2, count: owners.length },
+            ].map(({ key, label, icon: Icon, count }) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition ${
+                  activeTab === key
+                    ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
+                    : "bg-white/[0.04] border border-white/[0.08] text-slate-400 hover:text-white hover:bg-white/[0.08]"
                 }`}
               >
-                {count}
-              </span>
-            </button>
-          ))}
+                <Icon className="w-4 h-4" />
+                {label}
+                <span
+                  className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
+                    activeTab === key ? "bg-white/20" : "bg-white/[0.08] text-slate-400"
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {loading && (
@@ -638,7 +641,7 @@ const ManageUsers = () => {
                 {[
                   { icon: MapPin, label: "Location", value: selectedVenue.city || selectedVenue.location || "N/A" },
                   { icon: Users, label: "Capacity", value: selectedVenue.capacity ? `${selectedVenue.capacity} guests` : "N/A" },
-                  { icon: DollarSign, label: "Price/Day", value: selectedVenue.pricePerDay ? `PKR ${Number(selectedVenue.pricePerDay).toLocaleString()}` : "N/A" },
+                  { icon: Banknote, label: "Starting From", value: selectedVenue.packages?.length > 0 ? `PKR ${Math.min(...selectedVenue.packages.map((p) => Number(p.pricePerPerson))).toLocaleString()}/person` : "Contact for pricing" },
                   { icon: Phone, label: "Contact", value: selectedVenue.contact || "N/A" },
                 ].map(({ icon: Icon, label, value }) => (
                   <div

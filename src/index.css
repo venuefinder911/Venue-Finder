@@ -9,6 +9,11 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Prevent horizontal scroll without breaking position:sticky */
+body {
+  overflow-x: clip;
+}
+
 /* Remove tap highlight on mobile */
 * {
   -webkit-tap-highlight-color: transparent;
@@ -30,6 +35,10 @@ html {
 .no-transition * {
   transition: none !important;
 }
+
+/* Hide scrollbar while keeping scroll functionality */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* Custom scrollbar for dark mode */
 html.dark ::-webkit-scrollbar-track {

@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { db, auth } from "../../services/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   collection, query, where, deleteDoc, doc, updateDoc, onSnapshot,
 } from "firebase/firestore";
@@ -169,6 +170,7 @@ const DeleteModal = ({ venueName, onConfirm, onCancel, loading }) => (
 // ── Main dashboard ────────────────────────────────────────────────────────────
 const OwnerDashboard = () => {
   const navigate = useNavigate();
+  const [authUid,      setAuthUid]      = useState(null);
   const [venues,       setVenues]       = useState([]);
   const [loading,      setLoading]      = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
@@ -181,10 +183,18 @@ const OwnerDashboard = () => {
   // The venue name for the modal
   const deleteTargetVenue = venues.find((v) => v.id === deleteTargetId);
 
+  // Wait for Firebase Auth to initialise (avoids race condition on page refresh)
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (fbUser) => {
+      setAuthUid(fbUser?.uid ?? null);
+    });
+    return () => unsub();
+  }, []);
+
   // Real-time listener for owner's venues
   useEffect(() => {
-    if (!auth.currentUser) return;
-    const q = query(collection(db, "venues"), where("ownerId", "==", auth.currentUser.uid));
+    if (!authUid) return;
+    const q = query(collection(db, "venues"), where("ownerId", "==", authUid));
     const unsub = onSnapshot(q, (snap) => {
       setVenues(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
       setLoading(false);
@@ -194,19 +204,19 @@ const OwnerDashboard = () => {
       setLoading(false);
     });
     return () => unsub();
-  }, []);
+  }, [authUid]);
 
   // Real-time count of pending booking requests
   useEffect(() => {
-    if (!auth.currentUser) return;
+    if (!authUid) return;
     const q = query(
       collection(db, "bookings"),
-      where("ownerId", "==", auth.currentUser.uid),
+      where("ownerId", "==", authUid),
       where("status", "==", "pending")
     );
     const unsub = onSnapshot(q, (snap) => setPendingCount(snap.size));
     return () => unsub();
-  }, []);
+  }, [authUid]);
 
   const handleConfirmDelete = async () => {
     if (!deleteTargetId) return;

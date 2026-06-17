@@ -8,13 +8,16 @@ import "leaflet/dist/leaflet.css";
 import App from "./App.jsx";
 import "./index.css";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
+import { FavoritesProvider } from "./context/FavoritesContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider>
       <Provider store={store}>
-        <App />
-        <ToastContainer theme="colored" />
+        <FavoritesProvider>
+          <App />
+          <ToastContainer theme="colored" />
+        </FavoritesProvider>
       </Provider>
     </ThemeProvider>
   </StrictMode>,
