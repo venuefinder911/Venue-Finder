@@ -1,19 +1,78 @@
 import React, { useState } from "react";
-import { signupUser } from "../../features/auth/authService";
+import { signupUser, googleSignIn, completeGoogleSignup } from "../../features/auth/authService";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../features/auth/authSlice";
 import { useNavigate, Link } from "react-router-dom";
-import { Building2, Users, MailCheck, Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Building2, Users, MailCheck, Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 import logo from "../../assets/vfl.jpeg";
 
 const inp = "w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition";
+
+const GoogleIcon = ({ className = "w-5 h-5" }) => (
+  <svg className={className} viewBox="0 0 48 48" aria-hidden="true">
+    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+    <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+    <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+  </svg>
+);
+
+// Maps Firebase auth error codes to friendly messages (null = silent, user cancelled)
+const googleErrorMessage = (error) => {
+  switch (error?.code) {
+    case "auth/popup-closed-by-user":
+    case "auth/cancelled-popup-request":
+      return null;
+    case "auth/popup-blocked":
+      return "Popup was blocked by your browser. Please allow popups and try again.";
+    case "auth/account-exists-with-different-credential":
+      return "This email is already registered with a password. Please sign in with email & password.";
+    case "auth/network-request-failed":
+      return "Network error. Please check your internet connection and try again.";
+    case "auth/unauthorized-domain":
+      return "This domain is not authorized for Google sign-in. Contact support.";
+    default:
+      return "Google sign-in failed. Please try again.";
+  }
+};
+
+const dashboardPath = (role) =>
+  role === "admin" ? "/dashboard/admin" : role === "owner" ? "/dashboard/owner" : "/dashboard/customer";
 
 const Signup = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "", role: "customer" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleGoogle = async () => {
+    if (googleLoading) return;
+    setGoogleLoading(true);
+    try {
+      const result = await googleSignIn();
+      if (result.isNew) {
+        // New user — create profile with the role selected above (Google email is pre-verified)
+        const { user, role } = await completeGoogleSignup(formData.role);
+        dispatch(setUser({ user, role }));
+        toast.success("Account created! Welcome to VenueFinder 🎉");
+        navigate(dashboardPath(role));
+      } else {
+        // Account already exists — just sign them in
+        dispatch(setUser({ user: result.user, role: result.role }));
+        toast.info("You already have an account — signed you in!");
+        navigate(dashboardPath(result.role));
+      }
+    } catch (error) {
+      const msg = googleErrorMessage(error);
+      if (msg) toast.error(msg);
+    }
+    setGoogleLoading(false);
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -131,6 +190,31 @@ const Signup = () => {
               {loading ? (<><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Creating account...</>) : (<>Create Account <ArrowRight className="w-4 h-4" /></>)}
             </button>
           </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-6">
+            <span className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">or</span>
+            <span className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+          </div>
+
+          {/* Continue with Google — uses the role selected above */}
+          <button
+            type="button"
+            onClick={handleGoogle}
+            disabled={googleLoading || loading}
+            className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 text-gray-700 dark:text-gray-200 font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {googleLoading ? (
+              <><Loader2 className="w-5 h-5 animate-spin" /><span>Connecting to Google...</span></>
+            ) : (
+              <><GoogleIcon /><span>Continue with Google</span></>
+            )}
+          </button>
+          <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">
+            Signing up with Google as: <span className="font-semibold text-sky-500">{formData.role === "owner" ? "Venue Owner" : "Customer"}</span>
+          </p>
+
           <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
             Already have an account?{" "}
             <Link to="/login" className="text-sky-500 font-semibold hover:text-sky-700 transition">Sign in</Link>
