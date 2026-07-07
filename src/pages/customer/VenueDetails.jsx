@@ -174,6 +174,16 @@ const VenueDetails = () => {
   const handleBooking = async (e) => {
     e.preventDefault();
     if (!user) { toast.info("Please login to book a venue."); navigate("/login"); return; }
+    // Use the live Firebase session (not the Redux copy) for the actual write —
+    // Redux/localStorage can say "logged in" even after the real session has
+    // expired or been signed out elsewhere, which is what causes Firestore to
+    // reject the write with "insufficient permissions" even though the UI looks fine.
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      toast.error("Your session has expired. Please log in again to book.");
+      navigate("/login");
+      return;
+    }
     const hasHalls = venue.halls?.length > 0;
     if (hasHalls && !selectedHall) { toast.error("Please select a hall for your event."); return; }
     if (!selectedDate) { toast.error("Please select a date for your event."); return; }
@@ -237,9 +247,9 @@ const VenueDetails = () => {
         venueId:         venue.id,
         venueName:       venue.name,
         venueImage:      images[0],
-        customerId:      user.uid,
-        customerName:    user.name || user.email?.split("@")[0] || "Customer",
-        customerEmail:   user.email,
+        customerId:      currentUser.uid,
+        customerName:    user.name || currentUser.email?.split("@")[0] || "Customer",
+        customerEmail:   currentUser.email,
         ownerId:         venue.ownerId,
         eventDate:       selectedDate,
         slot:            selectedSlot,
@@ -285,8 +295,14 @@ const VenueDetails = () => {
   // Open or create chat with owner
   const openChat = async () => {
     if (!user) { toast.info("Please login to message the owner."); navigate("/login"); return; }
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      toast.error("Your session has expired. Please log in again.");
+      navigate("/login");
+      return;
+    }
     try {
-      const chatId  = `${user.uid}_${id}`;
+      const chatId  = `${currentUser.uid}_${id}`;
       const chatRef = doc(db, "chats", chatId);
       const chatSnap = await getDoc(chatRef);
       if (!chatSnap.exists()) {
@@ -302,9 +318,9 @@ const VenueDetails = () => {
           venueId:        id,
           venueName:      venue.name,
           venueImage:     images[0] || "",
-          customerId:     user.uid,
-          customerName:   user.name || user.email?.split("@")[0] || "Customer",
-          customerEmail:  user.email,
+          customerId:     currentUser.uid,
+          customerName:   user.name || currentUser.email?.split("@")[0] || "Customer",
+          customerEmail:  currentUser.email,
           ownerId:        venue.ownerId,
           ownerName,
           ownerEmail:     venue.ownerEmail || "",
