@@ -60,7 +60,7 @@ const Chat = () => {
       }
     });
     return () => unsub();
-  }, [chatId, user]);
+  }, [chatId, user, initData]);
 
   // Listen to messages
   useEffect(() => {
@@ -115,7 +115,6 @@ const Chat = () => {
       updateDoc(doc(db, "chats", chatId), { [field]: 0 }).catch(() => {});
     }
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, chatId, user, chatMeta, role]);
 
   const handleSend = async (e) => {

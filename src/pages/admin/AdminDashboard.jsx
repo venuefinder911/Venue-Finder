@@ -141,7 +141,6 @@ const AdminDashboard = () => {
 
   const deleteVenue = async (id) => {
     // Use window.confirm — acceptable in admin-only dashboard
-    // eslint-disable-next-line no-restricted-globals
     if (!window.confirm("Permanently delete this venue? This cannot be undone.")) return;
     setActionLoading(id + "_delete");
     try {

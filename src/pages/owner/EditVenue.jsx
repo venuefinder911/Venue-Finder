@@ -114,7 +114,7 @@ const EditVenue = () => {
       setFetching(false);
     };
     load();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -41,7 +41,7 @@ function FlyTo({ lat, lng }) {
   const map = useMap();
   useEffect(() => {
     if (lat && lng) map.flyTo([lat, lng], 16, { duration: 1 });
-  }, [lat, lng]);
+  }, [lat, lng, map]);
   return null;
 }
 
